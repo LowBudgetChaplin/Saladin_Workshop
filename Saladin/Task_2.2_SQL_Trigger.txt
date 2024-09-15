@@ -1,0 +1,28 @@
+
+CREATE TRIGGER trg_update_knight_dictionary_type
+ON KnightXBattle
+AFTER UPDATE
+	AS
+	BEGIN
+		DECLARE @totalCoins INT;
+		DECLARE @knightTypeId INT;
+		DECLARE @knightId INT;
+
+		SELECT @knightId = i.knightId
+		FROM inserted i;
+
+		SELECT @totalCoins = SUM(CoinsAwarded)
+		FROM KnightXBattle
+		WHERE knightId = @knightId;
+
+		SELECT TOP 1 @knightTypeId = Id
+		FROM DictionaryKnightType
+		WHERE @totalCoins > CoinsFrom AND @totalCoins < CoinsTo;
+
+		IF @knightTypeId IS NOT NULL
+		BEGIN
+			UPDATE Knight
+			SET DictionaryKnightTypeId = @knightTypeId
+			WHERE Id = @knightId;
+   END
+END;

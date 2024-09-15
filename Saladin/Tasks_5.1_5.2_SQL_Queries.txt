@@ -1,0 +1,8 @@
+SELECT K.KnightId, K.Name AS KnightName, L.Name AS LegionName, B.Name AS MissingBattleName
+FROM Knight K
+	JOIN Legion L ON K.LegionId = L.LegionId
+	JOIN LegionXBattle LB ON L.LegionId = LB.LegionId
+	JOIN Battle B ON LB.BattleId = B.BattleId
+	LEFT JOIN KnightXBattle KB ON K.KnightId = KB.KnightId AND B.BattleId = KB.BattleId
+WHERE KB.BattleId IS NULL
+ORDER BY L.Name, K.Name, B.Name;
